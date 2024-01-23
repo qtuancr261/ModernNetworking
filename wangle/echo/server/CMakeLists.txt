@@ -208,6 +208,18 @@ set_target_properties(libzstd PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/Debug/lib64/libzstd.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/RelWithDebInfo/lib64/libzstd.a)
 
+# include define
+include_directories(
+        ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen/include
+        ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/include
+)
 
+list(APPEND _libs_prebuilt libwangle libfizz_test_support libfizz libfolly_exception_counter
+        libfollybenchmark libfolly_exception_tracer libfolly_test_util libfolly_exception_tracer_base libfolly libfmt libzstd)
+list(APPEND _libs_system ${libbz2} ${liblzma} ${liblz4} ${libz} ${libsnappy} ${libunwind} ${libboost_context} ${libboost_iostreams} ${libsodium} ${libssl} ${libcrypto} ${libevent} ${libdouble-conversion} ${libiberty} ${libgflags} ${libglog} ${libpthread} ${libdl} ${librt})
 
-add_executable(${execName} main.cpp)
+add_executable(${execName} main.cpp
+        EchoServer.cpp
+        EchoServer.h)
+
+target_link_libraries(${execName} ${_libs_prebuilt} ${_libs_system})
