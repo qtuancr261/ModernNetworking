@@ -3,9 +3,10 @@
 //
 
 #include "EchoServer.h"
+#include <iostream>
 DEFINE_uint32(lineMaxLength, 8192, "LineBaseFrameDecoder max length");
 void EchoHandler::read(wangle::HandlerAdapter<std::string>::Context *ctx, std::string msg) {
-    LOG(INFO) << "read " << msg;
+    std::cout << "handling " << msg << std::endl;
     write(ctx, msg.append("\r\n"));
 }
 EchoPipeLine ::Ptr EchoPipeLineFactory::newPipeline(std::shared_ptr<folly::AsyncTransport> socket) {

@@ -8,7 +8,7 @@
 #include "wangle/channel/AsyncSocketHandler.h"
 #include "wangle/codec/LineBasedFrameDecoder.h"
 #include "wangle/codec/StringCodec.h"
-using EchoPipeLine = wangle::Pipeline<folly::IOBuf, std::string>;
+using EchoPipeLine = wangle::Pipeline<folly::IOBufQueue&, std::string>;
 /**
  * Receive a string and write it back straight
  */
