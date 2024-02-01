@@ -10,6 +10,7 @@ void EchoHandler::read(wangle::HandlerAdapter<std::string>::Context *ctx, std::s
     write(ctx, msg.append("\r\n"));
 }
 EchoPipeLine ::Ptr EchoPipeLineFactory::newPipeline(std::shared_ptr<folly::AsyncTransport> socket) {
+    std::cout << "new pipeline on thread " << std::this_thread::get_id() << std::endl;
     auto pipeLine = EchoPipeLine::create();
     pipeLine->addBack(wangle::AsyncSocketHandler(socket));
     pipeLine->addBack(wangle::LineBasedFrameDecoder(FLAGS_lineMaxLength));
