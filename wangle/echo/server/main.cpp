@@ -98,7 +98,7 @@ int main(int argc, char *argv[]) {
         // connection is coming in.
         // If the client does not send 9 bytes, the
         // connection will idle out before the EchoCallback receives data.
-        socketConfig.allowInsecureConnectionsOnSecureServer = true;
+        socketConfig.allowInsecureConnectionsOnSecureServer = false;
         // reload SSL contexts when cert changes
         std::set<std::string> pathsToWatch{FLAGS_cert_path, FLAGS_key_path};
         if (!FLAGS_ca_path.empty()) {
