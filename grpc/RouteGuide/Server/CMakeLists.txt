@@ -650,6 +650,10 @@ add_executable(${execName} main.cpp
         gen-cpp/route_guide.pb.h # protobuf generated message classes
         gen-cpp/route_guide.pb.cc
         gen-cpp/route_guide.grpc.pb.h # grpc generated service classes
-        gen-cpp/route_guide.grpc.pb.cc)
+        gen-cpp/route_guide.grpc.pb.cc
+        RouteGuideServer.cpp
+        RouteGuideServer.h
+        Helper.cpp
+        Helper.h)
 
 target_link_libraries(${execName} ${_libs_prebuilt} ${_libs_system})
