@@ -14,7 +14,21 @@ grpc::Status RouteGuideServer::GetFeature(grpc::ServerContext *context, const ro
     return grpc::Status::OK;
 }
 grpc::Status RouteGuideServer::ListFeatures(grpc::ServerContext *context, const routeguide::Rectangle *request, grpc::ServerWriter<routeguide::Feature> *writer) {
-    return Service::ListFeatures(context, request, writer);
+    // return Service::ListFeatures(context, request, writer);
+    auto lo = request->lo();
+    auto hi = request->hi();
+    long left = (std::min)(lo.longitude(), hi.longitude());
+    long right = (std::max)(lo.longitude(), hi.longitude());
+    long top = (std::max)(lo.latitude(), hi.latitude());
+    long bottom = (std::min)(lo.latitude(), hi.latitude());
+    for (const routeguide::Feature& f : features_) {
+        if (f.location().longitude() >= left &&
+            f.location().longitude() <= right &&
+            f.location().latitude() >= bottom && f.location().latitude() <= top) {
+            writer->Write(f);
+            }
+    }
+    return grpc::Status::OK;
 }
 grpc::Status RouteGuideServer::RecordRoute(grpc::ServerContext *context, grpc::ServerReader<routeguide::Point> *reader, routeguide::RouteSummary *response) {
     return Service::RecordRoute(context, reader, response);
@@ -45,11 +59,11 @@ float RouteGuideServer::getDistance(const routeguide::Point &start, const routeg
     return R * c;
 }
 std::string RouteGuideServer::getFeatureName(const routeguide::Point &point, const std::vector<routeguide::Feature> &feature_list) {
-    for (const routeguide::Feature& f : feature_list) {
+    for (const routeguide::Feature &f: feature_list) {
         if (f.location().latitude() == point.latitude() &&
             f.location().longitude() == point.longitude()) {
             return f.name();
-            }
+        }
     }
     return "";
 }
