@@ -33,12 +33,69 @@ std::string Helper::GetDbFileContent(int argc, char *argv[]) {
     return dbreadStream.str();
 }
 void Helper::ParseDB(const std::string &db, std::vector<routeguide::Feature> *featuresList) {
-    featuresList->clear();
+    std::string db_content(db);
+    db_content.erase(
+            std::remove_if(db_content.begin(), db_content.end(), isspace),
+            db_content.end());
+
+    Parser parser(db_content);
+    routeguide::Feature feature;
+    while (!parser.Finished()) {
+        featuresList->push_back(routeguide::Feature());
+        if (!parser.TryParseOne(&featuresList->back())) {
+            std::cout << "Error parsing the db file";
+            featuresList->clear();
+            break;
+        }
+    }
+    std::cout << "DB parsed, loaded " << featuresList->size() << " features."
+              << std::endl;
 }
+
 
 Helper::Parser::Parser(const std::string &db) : db_{db} {
     // remove all spaces.
     db_.erase(std::remove_if(db_.begin(), db_.end(), isspace), db_.end());
+    if (!Match("[")) {
+        SetFailedAndReturnFalse();
+    }
+}
+bool Helper::Parser::Finished() {
+    return current_ >= db_.size();
+}
+bool Helper::Parser::TryParseOne(routeguide::Feature *feature) {
+    if (failed_ || Finished() || !Match("{")) {
+        return SetFailedAndReturnFalse();
+    }
+    if (!Match(location_) || !Match("{") || !Match(latitude_)) {
+        return SetFailedAndReturnFalse();
+    }
+
+    long temp = 0;
+    ReadLong(&temp);
+    feature->mutable_location()->set_latitude(temp);
+    if (!Match(",") || !Match(longitude_)) {
+        return SetFailedAndReturnFalse();
+    }
+    ReadLong(&temp);
+    feature->mutable_location()->set_longitude(temp);
+    if (!Match("},") || !Match(name_) || !Match("\"")) {
+        return SetFailedAndReturnFalse();
+    }
+    size_t name_start = current_;
+    while (current_ != db_.size() && db_[current_++] != '"') {
+    }
+    if (current_ == db_.size()) {
+        return SetFailedAndReturnFalse();
+    }
+    feature->set_name(db_.substr(name_start, current_ - name_start - 1));
+    if (!Match("},")) {
+        if (db_[current_ - 1] == ']' && current_ == db_.size()) {
+            return true;
+        }
+        return SetFailedAndReturnFalse();
+    }
+    return true;
 }
 bool Helper::Parser::Match(const std::string &prefix) {
     bool isEqual = db_.substr(current_, prefix.size()) == prefix;
@@ -48,4 +105,13 @@ bool Helper::Parser::Match(const std::string &prefix) {
 bool Helper::Parser::SetFailedAndReturnFalse() {
     failed_ = true;
     return false;
+}
+void Helper::Parser::ReadLong(long *l) {
+    size_t start = current_;
+    while (current_ != db_.size() && db_[current_] != ',' &&
+           db_[current_] != '}') {
+        current_++;
+    }
+    // It will throw an exception if fails.
+    *l = std::stol(db_.substr(start, current_ - start));
 }

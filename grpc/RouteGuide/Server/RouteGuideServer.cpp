@@ -3,9 +3,14 @@
 //
 
 #include "RouteGuideServer.h"
+#include "Helper.h"
+RouteGuideServer::RouteGuideServer(const std::string &db) {
+    Helper::ParseDB(db, &features_);
+}
 grpc::Status RouteGuideServer::GetFeature(grpc::ServerContext *context, const routeguide::Point *request, routeguide::Feature *response) {
     // return Service::GetFeature(context, request, response);
-    // response->set_name(getFeatureName(*request));
+    response->set_name(getFeatureName(*request, features_));
+    response->mutable_location()->CopyFrom(*request);
     return grpc::Status::OK;
 }
 grpc::Status RouteGuideServer::ListFeatures(grpc::ServerContext *context, const routeguide::Rectangle *request, grpc::ServerWriter<routeguide::Feature> *writer) {

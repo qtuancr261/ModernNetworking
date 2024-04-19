@@ -11,8 +11,18 @@
  * @brief synchronous version of RouteGuide::Service
  */
 class RouteGuideServer final : public routeguide::RouteGuide::Service {
-
 public:
+    explicit RouteGuideServer(const std::string& db);
+public:
+    // all service methods can (and will) be called from multiple threads at the same time
+    // Make sure that our method implemetations are THREAD SAFE
+    /**
+     * @brief simple RPC method
+     * @param context
+     * @param request client's Point protocol buffer request
+     * @param response Feature protocol buffer to fill in with the response
+     * @return OK status to tell gRPC that we've finished dealing with the RPC and the response can be returned to the client
+     */
     grpc::Status GetFeature(grpc::ServerContext *context, const routeguide::Point *request, routeguide::Feature *response) override;
     grpc::Status ListFeatures(grpc::ServerContext *context, const routeguide::Rectangle *request, grpc::ServerWriter<routeguide::Feature> *writer) override;
     grpc::Status RecordRoute(grpc::ServerContext *context, grpc::ServerReader<routeguide::Point> *reader, routeguide::RouteSummary *response) override;

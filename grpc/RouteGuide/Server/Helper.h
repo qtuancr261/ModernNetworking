@@ -19,9 +19,12 @@ public:
     class Parser {
     public:
         explicit Parser(const std::string &db);
+        bool Finished();
+        bool TryParseOne(routeguide::Feature* feature);
     private:
         bool Match(const std::string& prefix);
         bool SetFailedAndReturnFalse();
+        void ReadLong(long* l);
     private:
         bool failed_ = false;
         std::string db_;
