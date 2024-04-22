@@ -7,8 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     set(execName grpcServer)
+    set(clientName grpcClient)
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(execName grpcServerd)
+    set(clientName grpcClientd)
 endif ()
 
 message(STATUS "OS type: " ${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION})
@@ -644,7 +646,7 @@ list(APPEND _libs_prebuilt libgrpcpp_channelz libgrpc++_reflection libgrpc++_alt
         libupb_message_lib libutf8_range libabsl_civil_time libabsl_exponential_biased libabsl_flags_commandlineflag_internal
         libabsl_int128 libabsl_leak_check libabsl_log_internal_nullguard libabsl_log_severity libabsl_random_internal_platform
         libabsl_random_seed_gen_exception libabsl_spinlock_wait libabsl_strerror libabsl_time_zone libaddress_sorting
-        libupb_base_lib libupb_mem_lib libutf8_range_lib libz )
+        libupb_base_lib libupb_mem_lib libutf8_range_lib libz)
 list(APPEND _libs_system ${libsystemd} ${libpthread} ${libdl} ${librt})
 add_executable(${execName} main.cpp
         gen-cpp/route_guide.pb.h # protobuf generated message classes
@@ -657,3 +659,14 @@ add_executable(${execName} main.cpp
         Helper.h)
 
 target_link_libraries(${execName} ${_libs_prebuilt} ${_libs_system})
+
+add_executable(${clientName} mainClient.cpp
+        gen-cpp/route_guide.pb.h # protobuf generated message classes
+        gen-cpp/route_guide.pb.cc
+        gen-cpp/route_guide.grpc.pb.h # grpc generated service classes
+        gen-cpp/route_guide.grpc.pb.cc
+        Helper.cpp
+        Helper.h
+        RouteGuideClient.cpp
+        RouteGuideClient.h)
+target_link_libraries(${clientName} ${_libs_prebuilt} ${_libs_system})
