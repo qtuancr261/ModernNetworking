@@ -100,7 +100,7 @@ bool Helper::Parser::TryParseOne(routeguide::Feature *feature) {
 bool Helper::Parser::Match(const std::string &prefix) {
     bool isEqual = db_.substr(current_, prefix.size()) == prefix;
     current_ += prefix.size();
-    return false;
+    return isEqual;
 }
 bool Helper::Parser::SetFailedAndReturnFalse() {
     failed_ = true;

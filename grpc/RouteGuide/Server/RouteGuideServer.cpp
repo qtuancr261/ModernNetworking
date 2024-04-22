@@ -21,20 +21,56 @@ grpc::Status RouteGuideServer::ListFeatures(grpc::ServerContext *context, const 
     long right = (std::max)(lo.longitude(), hi.longitude());
     long top = (std::max)(lo.latitude(), hi.latitude());
     long bottom = (std::min)(lo.latitude(), hi.latitude());
-    for (const routeguide::Feature& f : features_) {
+    for (const routeguide::Feature &f: features_) {
         if (f.location().longitude() >= left &&
             f.location().longitude() <= right &&
             f.location().latitude() >= bottom && f.location().latitude() <= top) {
             writer->Write(f);
-            }
+        }
     }
     return grpc::Status::OK;
 }
 grpc::Status RouteGuideServer::RecordRoute(grpc::ServerContext *context, grpc::ServerReader<routeguide::Point> *reader, routeguide::RouteSummary *response) {
-    return Service::RecordRoute(context, reader, response);
+    // return Service::RecordRoute(context, reader, response);
+    routeguide::Point point;
+    int point_count = 0;
+    int feature_count = 0;
+    float distance = 0.0;
+    routeguide::Point previous;
+
+    std::chrono::system_clock::time_point start_time = std::chrono::system_clock::now();
+    while (reader->Read(&point)) {
+        point_count++;
+        if (!getFeatureName(point, features_).empty()) {
+            feature_count++;
+        }
+        if (point_count != 1) {
+            distance += getDistance(previous, point);
+        }
+        previous = point;
+    }
+    std::chrono::system_clock::time_point end_time = std::chrono::system_clock::now();
+    response->set_point_count(point_count);
+    response->set_feature_count(feature_count);
+    response->set_distance(static_cast<long>(distance));
+    auto secs = std::chrono::duration_cast<std::chrono::seconds>(end_time - start_time);
+    response->set_elapsed_time(secs.count());
+    return grpc::Status::OK;
 }
 grpc::Status RouteGuideServer::RouteChat(grpc::ServerContext *context, grpc::ServerReaderWriter<routeguide::RouteNote, routeguide::RouteNote> *stream) {
-    return Service::RouteChat(context, stream);
+    // return Service::RouteChat(context, stream);
+    routeguide::RouteNote note;
+    while (stream->Read(&note)) {
+        std::unique_lock lock(mutex_);
+        for (const routeguide::RouteNote& n : receivedRouteNotes_) {
+            if (n.location().latitude() == note.location().latitude() &&
+                n.location().longitude() == note.location().longitude()) {
+                stream->Write(n);
+                }
+        }
+        receivedRouteNotes_.push_back(note);
+    }
+    return grpc::Status::OK;
 }
 float RouteGuideServer::convertToRadians(float num) {
     return num * 3.1415926 / 180;

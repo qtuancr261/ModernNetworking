@@ -25,14 +25,28 @@ public:
      */
     grpc::Status GetFeature(grpc::ServerContext *context, const routeguide::Point *request, routeguide::Feature *response) override;
     /**
-     * @brief streaming RPC method - a bit more complicated
+     * @brief server streaming RPC method - a bit more complicated
      * @param context
      * @param request client's Rectangle protocol buffer request
      * @param writer ServerWriter to populate as many Feature objects as we have to return
      * @return OK status to tell gRPC that we've finished writing responses.
      */
     grpc::Status ListFeatures(grpc::ServerContext *context, const routeguide::Rectangle *request, grpc::ServerWriter<routeguide::Feature> *writer) override;
+    /**
+     * @brief client streaming RPC method
+     * @param context
+     * @param reader ServerReader to repeatedly read in our client's requests object until there are no more messages
+     * @param response
+     * @return
+     */
     grpc::Status RecordRoute(grpc::ServerContext *context, grpc::ServerReader<routeguide::Point> *reader, routeguide::RouteSummary *response) override;
+    /**
+     * @brief bidirectional streaming RPC method
+     * @param context
+     * @param stream used to read and write messages. Each side will always get the other's messages in the order thay were written,both the
+     * client and server can read and write in any order - the stream operate completely indendendently
+     * @return 
+     */
     grpc::Status RouteChat(grpc::ServerContext *context, grpc::ServerReaderWriter<routeguide::RouteNote, routeguide::RouteNote> *stream) override;
 
 public:
