@@ -4,17 +4,22 @@
 
 #ifndef ROUTEGUIDECLIENT_H
 #define ROUTEGUIDECLIENT_H
-#include "gen-cpp/route_guide.pb.h"
 #include "gen-cpp/route_guide.grpc.pb.h"
+#include "gen-cpp/route_guide.pb.h"
 
 
 class RouteGuideClient {
 public:
-    RouteGuideClient(std::shared_ptr<grpc::Channel> channel, const std::string& db);
-    void GetFeature();
+    RouteGuideClient(std::shared_ptr<grpc::Channel> channel, const std::string &db);
     static routeguide::Point MakePoint(long latitude, long longitude);
+    static routeguide::Feature MakeFeature(const std::string &name, long latitude, long longitude);
+    static routeguide::RouteNote MakeRouteNote(const std::string &message, long latitude, long longitude);
+
+    void GetFeature();
+    void ListFeatures();
+
 private:
-    bool GetOneFeature(const routeguide::Point& point, routeguide::Feature* feature);
+    bool GetOneFeature(const routeguide::Point &point, routeguide::Feature *feature);
 
 
 private:
@@ -24,5 +29,4 @@ private:
 };
 
 
-
-#endif //ROUTEGUIDECLIENT_H
+#endif//ROUTEGUIDECLIENT_H
