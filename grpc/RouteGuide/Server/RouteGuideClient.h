@@ -17,7 +17,8 @@ public:
 
     void GetFeature();
     void ListFeatures();
-
+    void RecordRoute();
+    void RouteChat();
 private:
     bool GetOneFeature(const routeguide::Point &point, routeguide::Feature *feature);
 
