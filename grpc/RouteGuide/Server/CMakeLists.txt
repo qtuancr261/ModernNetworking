@@ -7,9 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
     set(execName grpcServer)
+    set(execAsyncServer grpcASyncServer)
     set(clientName grpcClient)
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(execName grpcServerd)
+    set(execAsyncServer grpcASyncServerd)
     set(clientName grpcClientd)
 endif ()
 
@@ -669,4 +671,15 @@ add_executable(${clientName} mainClient.cpp
         Helper.h
         RouteGuideClient.cpp
         RouteGuideClient.h)
+target_link_libraries(${clientName} ${_libs_prebuilt} ${_libs_system})
+
+add_executable(${execAsyncServer} mainClient.cpp
+        gen-cpp/route_guide.pb.h # protobuf generated message classes
+        gen-cpp/route_guide.pb.cc
+        gen-cpp/route_guide.grpc.pb.h # grpc generated service classes
+        gen-cpp/route_guide.grpc.pb.cc
+        Helper.cpp
+        Helper.h
+        RoutGuideAsyncServer.cpp
+        RoutGuideAsyncServer.h)
 target_link_libraries(${clientName} ${_libs_prebuilt} ${_libs_system})
