@@ -673,13 +673,15 @@ add_executable(${clientName} mainClient.cpp
         RouteGuideClient.h)
 target_link_libraries(${clientName} ${_libs_prebuilt} ${_libs_system})
 
-add_executable(${execAsyncServer} mainClient.cpp
+add_executable(${execAsyncServer} mainASyncServer.cpp
         gen-cpp/route_guide.pb.h # protobuf generated message classes
         gen-cpp/route_guide.pb.cc
         gen-cpp/route_guide.grpc.pb.h # grpc generated service classes
         gen-cpp/route_guide.grpc.pb.cc
         Helper.cpp
         Helper.h
+        RouteGuideServer.h
+        RouteGuideServer.cpp
         RoutGuideAsyncServer.cpp
         RoutGuideAsyncServer.h)
-target_link_libraries(${clientName} ${_libs_prebuilt} ${_libs_system})
+target_link_libraries(${execAsyncServer} ${_libs_prebuilt} ${_libs_system})
