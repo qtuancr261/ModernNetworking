@@ -10,13 +10,19 @@
 #include <grpcpp/server.h>
 
 /**
- * @brief gRPC async/non-blocking APIs server
+ * @brief gRPC unary async/non-blocking APIs server
+ * based on gRPC C++ hellword async server example: greeter_async_server.cc
  */
 class RoutGuideAsyncServer final {
 public:
     RoutGuideAsyncServer(std::string db);
     ~RoutGuideAsyncServer();
     void Run();
+    /**
+     * @brief event-loop that waits for the next event to become avaiable on the queue
+     * and deals with timeout and shutdown. If there is a tag, we cast the tag to a pointer instance
+     * of our request class and proceed the event based on object state-machine
+     */
     void HandleRPCCalls();
 
 private:

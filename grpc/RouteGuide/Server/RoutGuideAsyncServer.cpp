@@ -37,7 +37,7 @@ void RoutGuideAsyncServer::Run() {
 void RoutGuideAsyncServer::HandleRPCCalls() {
     // spawn new model instance to handle new clients
     new ProcessRequestModel(&asyncService_, completionQueue_.get(), &features_);
-    void* reqTag;
+    void *reqTag;
     bool isOk;
     while (true) {
         // Block waiting to read the next event from the completion queue. The
@@ -45,25 +45,27 @@ void RoutGuideAsyncServer::HandleRPCCalls() {
         // memory address of a ProcessRequestModel instance.
         // The return value of Next should always be checked. This return value
         // tells us whether there is any kind of event or cq_ is shutting down.
-        std::cout << "Waiting for completion queue" << std::endl;
+        std::cout << "Waiting for next event from completion queue" << std::endl;
         GPR_ASSERT(completionQueue_->Next(&reqTag, &isOk));
         GPR_ASSERT(isOk);
-        static_cast<ProcessRequestModel*>(reqTag)->Proceed();
+        std::cout << "Getting task from completion queue" << std::endl;
+        static_cast<ProcessRequestModel *>(reqTag)->Proceed();
     }
 }
-RoutGuideAsyncServer::ProcessRequestModel::ProcessRequestModel(routeguide::RouteGuide::AsyncService *service, grpc::ServerCompletionQueue *serverCompletionQueue, const std::vector<routeguide::Feature>* features)
+RoutGuideAsyncServer::ProcessRequestModel::ProcessRequestModel(routeguide::RouteGuide::AsyncService *service, grpc::ServerCompletionQueue *serverCompletionQueue, const std::vector<routeguide::Feature> *features)
     : asyncService_{service}, comQueue_{serverCompletionQueue}, features_(features), responder_{&serverContext_}, status_{CREATE} {
     // Invoke the serving logic right away.
     Proceed();
 }
 void RoutGuideAsyncServer::ProcessRequestModel::Proceed() {
-    std::cout << "Processing request asynchronous" << std::endl;
     if (status_ == CREATE) {
+        std::cout << "create asynchronous" << std::endl;
         // make this instance progress to the PROCESS state
         status_ = PROCESS;
         // just handle one API service :V
         asyncService_->RequestGetFeature(&serverContext_, &requestPoint_, &responder_, comQueue_, comQueue_, this);
     } else if (status_ == PROCESS) {
+        std::cout << "process asynchronous" << std::endl;
         // Spawn a new CallData instance to serve new clients while we process
         // the one for this CallData. The instance will deallocate itself as
         // part of its FINISH state.
@@ -77,6 +79,7 @@ void RoutGuideAsyncServer::ProcessRequestModel::Proceed() {
         status_ = FINISH;
         responder_.Finish(responseFeature_, grpc::Status::OK, this);
     } else {
+        std::cout << "finish asynchronous" << std::endl;
         GPR_ASSERT(status_ == FINISH);
         // Once in the FINISH state, deallocate ourselves
         delete this;
