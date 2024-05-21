@@ -23,6 +23,34 @@ message(STATUS "Default compiler flags: ${CMAKE_CXX_FLAGS}")
 message(STATUS "Additional compiler flags: ${_flags}")
 message(STATUS "Version: ${configurationTime}")
 
+find_library(libz z)
+if (libz)
+    message(STATUS "Found system library z: ${libz}")
+else ()
+    message(FATAL_ERROR "Could NOT find library z. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libre2 re2)
+if (libz)
+    message(STATUS "Found system library re2: ${libre2}")
+else ()
+    message(FATAL_ERROR "Could NOT find library re2. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libssl ssl)
+if (libssl)
+    message(STATUS "Found system library ssl: ${libssl}")
+else ()
+    message(FATAL_ERROR "Could NOT find library ssl. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libcrypto crypto)
+if (libcrypto)
+    message(STATUS "Found system library crypto: ${libcrypto}")
+else ()
+    message(FATAL_ERROR "Could NOT find library crypto. Please install it via your system package manager to build this project !")
+endif ()
+
 find_library(libsystemd systemd)
 if (libsystemd)
     message(STATUS "Found system library systemd: ${libsystemd}")
@@ -246,10 +274,10 @@ set_target_properties(libabsl_synchronization PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libabsl_synchronization.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libabsl_synchronization.a)
 
-add_library(libssl STATIC IMPORTED)
-set_target_properties(libssl PROPERTIES
-        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libssl.a
-        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libssl.a)
+#add_library(libssl STATIC IMPORTED)
+#set_target_properties(libssl PROPERTIES
+#        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libssl.a
+#        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libssl.a)
 
 add_library(libabsl_crc_cord_state STATIC IMPORTED)
 set_target_properties(libabsl_crc_cord_state PROPERTIES
@@ -321,10 +349,10 @@ set_target_properties(libabsl_str_format_internal PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libabsl_str_format_internal.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libabsl_str_format_internal.a)
 
-add_library(libcrypto STATIC IMPORTED)
-set_target_properties(libcrypto PROPERTIES
-        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libcrypto.a
-        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libcrypto.a)
+#add_library(libcrypto STATIC IMPORTED)
+#set_target_properties(libcrypto PROPERTIES
+#        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libcrypto.a
+#        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libcrypto.a)
 
 add_library(libutf8_validity STATIC IMPORTED)
 set_target_properties(libutf8_validity PROPERTIES
@@ -486,10 +514,10 @@ set_target_properties(libabsl_throw_delegate PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libabsl_throw_delegate.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libabsl_throw_delegate.a)
 
-add_library(libre2 STATIC IMPORTED)
-set_target_properties(libre2 PROPERTIES
-        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libre2.a
-        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libre2.a)
+#add_library(libre2 STATIC IMPORTED)
+#set_target_properties(libre2 PROPERTIES
+#        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libre2.a
+#        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libre2.a)
 
 add_library(libabsl_bad_any_cast_impl STATIC IMPORTED)
 set_target_properties(libabsl_bad_any_cast_impl PROPERTIES
@@ -616,10 +644,10 @@ set_target_properties(libutf8_range_lib PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libutf8_range_lib.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libutf8_range_lib.a)
 
-add_library(libz STATIC IMPORTED)
-set_target_properties(libz PROPERTIES
-        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libz.a
-        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libz.a)
+#add_library(libz STATIC IMPORTED)
+#set_target_properties(libz PROPERTIES
+#        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libz.a
+#        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libz.a)
 
 # include define
 include_directories(
@@ -633,23 +661,23 @@ list(APPEND _libs_prebuilt libgrpcpp_channelz libgrpc++_reflection libgrpc++_alt
         libabsl_flags_reflection libabsl_log_internal_check_op libabsl_log_internal_message libabsl_status libabsl_cord
         libabsl_cordz_sample_token libabsl_flags_internal libabsl_log_initialize libabsl_log_internal_log_sink_set libabsl_raw_hash_set
         libabsl_cordz_info libabsl_flags_config libabsl_log_globals libabsl_vlog_config_internal libabsl_cord_internal
-        libabsl_cordz_handle libabsl_flags_program_name libabsl_hashtablez_sampler libabsl_synchronization libssl
+        libabsl_cordz_handle libabsl_flags_program_name libabsl_hashtablez_sampler libabsl_synchronization
         libabsl_crc_cord_state libabsl_crc32c libabsl_flags_marshalling libabsl_log_internal_format libabsl_log_sink
         libabsl_random_seed_sequences libabsl_failure_signal_handler libabsl_flags_private_handle_accessor libabsl_kernel_timeout_internal libabsl_log_entry
-        libabsl_log_internal_globals libabsl_random_internal_distribution_test_util libabsl_random_internal_pool_urbg libabsl_str_format_internal libcrypto
+        libabsl_log_internal_globals libabsl_random_internal_distribution_test_util libabsl_random_internal_pool_urbg libabsl_str_format_internal
         libutf8_validity libabsl_examine_stack libabsl_hash libabsl_log_internal_fnmatch libabsl_log_internal_proto
         libabsl_random_distributions libabsl_random_internal_seed_material libabsl_time libabsl_flags_commandlineflag libabsl_symbolize
         libabsl_strings libabsl_crc_cpu_detect libabsl_crc_internal libabsl_log_internal_conditions libabsl_low_level_hash
         libabsl_random_internal_randen libupb_json_lib libupb_textformat_lib libabsl_city libabsl_demangle_internal
         libabsl_graphcycles_internal libabsl_malloc_internal libabsl_string_view libabsl_strings_internal libabsl_bad_optional_access
         libabsl_bad_variant_access libabsl_base libabsl_cordz_functions libabsl_random_internal_randen_hwaes
-        libabsl_stacktrace libabsl_debugging_internal libabsl_throw_delegate libre2 libabsl_bad_any_cast_impl libabsl_scoped_set_env
+        libabsl_stacktrace libabsl_debugging_internal libabsl_throw_delegate libabsl_bad_any_cast_impl libabsl_scoped_set_env
         libcares libabsl_periodic_sampler libabsl_random_internal_randen_hwaes_impl libabsl_random_internal_randen_slow libabsl_raw_logging_internal
         libupb_message_lib libutf8_range libabsl_civil_time libabsl_exponential_biased libabsl_flags_commandlineflag_internal
         libabsl_int128 libabsl_leak_check libabsl_log_internal_nullguard libabsl_log_severity libabsl_random_internal_platform
         libabsl_random_seed_gen_exception libabsl_spinlock_wait libabsl_strerror libabsl_time_zone libaddress_sorting
-        libupb_base_lib libupb_mem_lib libutf8_range_lib libz)
-list(APPEND _libs_system ${libsystemd} ${libpthread} ${libdl} ${librt})
+        libupb_base_lib libupb_mem_lib libutf8_range_lib)
+list(APPEND _libs_system ${libre2} ${libssl} ${libcrypto} ${libz} ${libsystemd} ${libpthread} ${libdl} ${librt})
 add_executable(${execName} main.cpp
         gen-cpp/route_guide.pb.h # protobuf generated message classes
         gen-cpp/route_guide.pb.cc
