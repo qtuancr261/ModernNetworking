@@ -644,19 +644,16 @@ set_target_properties(libutf8_range_lib PROPERTIES
         IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libutf8_range_lib.a
         IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libutf8_range_lib.a)
 
-#add_library(libz STATIC IMPORTED)
-#set_target_properties(libz PROPERTIES
-#        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/Debug/lib/libz.a
-#        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/RelWithDebInfo/lib/libz.a)
-
 # include define
 include_directories(
         ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/include
+        ${PROJECT_SOURCE_DIR}/../../../../clib/grpc-deps/include
 )
 
-list(APPEND _libs_prebuilt libgrpcpp_channelz libgrpc++_reflection libgrpc++_alts libgrpc++ libgrpc++_error_details
-        libgrpc libgrpc++_unsecure libgrpc_unsecure libgrpc_authorization_provider libgrpc_plugin_support
-        libprotoc libprotobuf libabsl_flags_parse libabsl_flags_usage libprotobuf-lite
+list(APPEND _libs_prebuilt libgrpc++_reflection libgrpc++_alts libgrpc++ libgrpc++_error_details
+        libgrpc libgrpc_authorization_provider
+        libprotoc libprotobuf
+        libabsl_flags_parse libabsl_flags_usage
         libgpr libabsl_flags_usage_internal libabsl_log_flags libabsl_statusor libabsl_die_if_null
         libabsl_flags_reflection libabsl_log_internal_check_op libabsl_log_internal_message libabsl_status libabsl_cord
         libabsl_cordz_sample_token libabsl_flags_internal libabsl_log_initialize libabsl_log_internal_log_sink_set libabsl_raw_hash_set
