@@ -15,7 +15,7 @@
  */
 class RoutGuideAsyncServer final {
 public:
-    RoutGuideAsyncServer(std::string db);
+    explicit RoutGuideAsyncServer(std::string db);
     ~RoutGuideAsyncServer();
     void Run();
     /**
