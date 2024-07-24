@@ -60,6 +60,48 @@ else ()
     message(FATAL_ERROR "Could NOT find library systemd. Please install it via your system package manager to build this project !")
 endif ()
 
+find_library(libunwind unwind)
+if (libunwind)
+    message(STATUS "Found system library unwind: ${libunwind}")
+else ()
+    message(FATAL_ERROR "Could NOT find library unwind. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libevent event)
+if (libevent)
+    message(STATUS "Found system library event: ${libevent}")
+else ()
+    message(FATAL_ERROR "Could NOT find library event. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libdouble-conversion double-conversion)
+if (libdouble-conversion)
+    message(STATUS "Found system library double-conversion: ${libdouble-conversion}")
+else ()
+    message(FATAL_ERROR "Could NOT find library double-conversion. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libiberty iberty)
+if (libiberty)
+    message(STATUS "Found system library iberty: ${libiberty}")
+else ()
+    message(FATAL_ERROR "Could NOT find library iberty. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libgflags gflags)
+if (libgflags)
+    message(STATUS "Found system library gflags: ${libgflags}")
+else ()
+    message(FATAL_ERROR "Could NOT find library gflags. Please install it via your system package manager to build this project !")
+endif ()
+
+find_library(libglog glog)
+if (libglog)
+    message(STATUS "Found system library glog: ${libglog}")
+else ()
+    message(FATAL_ERROR "Could NOT find library glog. Please install it via your system package manager to build this project !")
+endif ()
+
 find_library(libpthread pthread)
 if (libpthread)
     message(STATUS "Found system library pthread: ${libpthread}")
@@ -80,6 +122,16 @@ if (librt)
 else ()
     message(FATAL_ERROR "Could NOT find library rt. Please install it via your system package manager to build this project !")
 endif ()
+
+add_library(libfolly STATIC IMPORTED)
+set_target_properties(libfolly PROPERTIES
+        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/Debug/lib/libfolly.a
+        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/RelWithDebInfo/lib/libfolly.a)
+
+add_library(libfmt STATIC IMPORTED)
+set_target_properties(libfmt PROPERTIES
+        IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/Debug/lib64/libfmt.a
+        IMPORTED_LOCATION_RELWITHDEBINFO ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/RelWithDebInfo/lib64/libfmt.a)
 
 add_library(libgrpcpp_channelz STATIC IMPORTED)
 set_target_properties(libgrpcpp_channelz PROPERTIES
@@ -650,9 +702,10 @@ set_target_properties(libutf8_range_lib PROPERTIES
 include_directories(
         ${PROJECT_SOURCE_DIR}/../../../../clib/grpc/include
         ${PROJECT_SOURCE_DIR}/../../../../clib/grpc-deps/include
+        ${PROJECT_SOURCE_DIR}/../../../../clib/proxygen-deps/include
 )
 
-list(APPEND _libs_prebuilt libgrpc++_reflection libgrpc++_alts libgrpc++ libgrpc++_error_details
+list(APPEND _libs_prebuilt libfolly libfmt libgrpc++_reflection libgrpc++_alts libgrpc++ libgrpc++_error_details
         libgrpc libgrpc_authorization_provider
         libgpr libprotoc libprotobuf
         libabsl_flags_parse libabsl_flags_usage
@@ -676,7 +729,7 @@ list(APPEND _libs_prebuilt libgrpc++_reflection libgrpc++_alts libgrpc++ libgrpc
         libabsl_int128 libabsl_leak_check libabsl_log_internal_nullguard libabsl_log_severity libabsl_random_internal_platform
         libabsl_random_seed_gen_exception libabsl_spinlock_wait libabsl_strerror libabsl_time_zone libaddress_sorting
         libupb_base_lib libupb_mem_lib libutf8_range_lib)
-list(APPEND _libs_system ${libre2} ${libssl} ${libcrypto} ${libz} ${libsystemd} ${libpthread} ${libdl} ${librt})
+list(APPEND _libs_system ${libre2} ${libssl} ${libcrypto} ${libz} ${libsystemd} ${libevent} ${libunwind} ${libdouble-conversion} ${libiberty} ${libgflags} ${libglog} ${libpthread} ${libdl} ${librt})
 add_executable(${execName} main.cpp
         gen-cpp/route_guide.pb.h # protobuf generated message classes
         gen-cpp/route_guide.pb.cc

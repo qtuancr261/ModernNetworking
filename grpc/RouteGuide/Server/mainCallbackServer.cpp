@@ -1,7 +1,8 @@
 #include "Helper.h"
 #include "RouteGuideCallbackServer.h"
 
-
+#include <folly/init/Init.h>
+#include <gflags/gflags.h>
 #include <grpcpp/health_check_service_interface.h>
 #include <grpcpp/server_builder.h>
 #include <string>
@@ -25,7 +26,14 @@ void RunRoutGuideCallbackServer(const std::string &db_path) {
     server->Wait();
 }
 int main(int argc, char *argv[]) {
-    std::string db = Helper::GetDbFileContent(argc, argv);
+#if FOLLY_HAVE_LIBGFLAGS
+    // Enable glog logging to stderr by default.
+    gflags::SetCommandLineOptionWithMode("logtostderr", "1", gflags::SET_FLAGS_DEFAULT);
+    // Enable glog logging to specific folder instead of default logging folder (/tmp/)
+    // gflags::SetCommandLineOptionWithMode("log_dir", "/data/zdn/log/", gflags::SET_FLAGS_DEFAULT);
+#endif
+    folly::Init init{&argc, &argv, false};
+    std::string db{Helper::GetDbFileContent(argc, argv)};
     RunRoutGuideCallbackServer(db);
     return 0;
 }
