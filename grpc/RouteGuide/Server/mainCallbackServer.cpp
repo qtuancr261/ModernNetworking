@@ -30,7 +30,6 @@ int main(int argc, char *argv[]) {
     // Enable glog logging to stderr by default.
     gflags::SetCommandLineOptionWithMode("logtostderr", "1", gflags::SET_FLAGS_DEFAULT);
     // Enable glog logging to specific folder instead of default logging folder (/tmp/)
-    // gflags::SetCommandLineOptionWithMode("log_dir", "/data/zdn/log/", gflags::SET_FLAGS_DEFAULT);
 #endif
     folly::Init init{&argc, &argv, false};
     std::string db{Helper::GetDbFileContent(argc, argv)};
