@@ -9,7 +9,7 @@
 #include <thread>
 RouteGuideUnaryReactor::RouteGuideUnaryReactor(const routeguide::Point &point, routeguide::Feature &feature, const std::vector<routeguide::Feature> &features) {
     // Process(point, feature, features);
-    folly::getGlobalCPUExecutor()->add(std::bind(&RouteGuideUnaryReactor::Process, this, point, feature, features));
+    folly::getGlobalCPUExecutor()->add([this, &point, &feature, &features] { Process(point, feature, features); });
     ABSL_LOG(INFO) << "unary RPC GetFeature added to CPU Executor " << std::this_thread::get_id();
     //finish the RPC - could be call later for running Process asynchronously
 }
