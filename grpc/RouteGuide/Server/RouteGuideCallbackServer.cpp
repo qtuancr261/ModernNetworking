@@ -6,6 +6,7 @@
 
 #include "Helper.h"
 #include "reactor/RouteGuideUnaryReactor.h"
+#include "reactor/RouteGuideWriteReactor.h"
 RouteGuideCallbackServer::RouteGuideCallbackServer(const std::string &db) {
     Helper::ParseDB(db, &features_);
 }
@@ -18,7 +19,12 @@ grpc::ServerUnaryReactor *RouteGuideCallbackServer::GetFeature(grpc::CallbackSer
     return new RouteGuideUnaryReactor{*point, *feature, features_};
 }
 grpc::ServerWriteReactor<routeguide::Feature> *RouteGuideCallbackServer::ListFeatures(grpc::CallbackServerContext *callbackServerContext, const routeguide::Rectangle *rectangle) {
-    return WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<WithCallbackMethod_RouteChat<Service>>>>::ListFeatures(callbackServerContext, rectangle);
+    if (callbackServerContext->IsCancelled()) {
+        auto *writeDoneReactor = new RouteGuideWriteReactor{rectangle, features_};
+        writeDoneReactor->Finish(grpc::Status(grpc::StatusCode::CANCELLED, "Deadline exceeded or Client cancelled, skip this RPC request!!!"));
+        return writeDoneReactor;
+    }
+    return new RouteGuideWriteReactor{rectangle, features_};
 }
 grpc::ServerReadReactor<routeguide::Point> *RouteGuideCallbackServer::RecordRoute(grpc::CallbackServerContext *callbackServerContext, routeguide::RouteSummary *routeSummary) {
     return WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<WithCallbackMethod_RouteChat<Service>>>>::RecordRoute(callbackServerContext, routeSummary);

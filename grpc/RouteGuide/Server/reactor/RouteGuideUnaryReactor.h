@@ -9,7 +9,8 @@
 #include "../gen-cpp/route_guide.grpc.pb.h"
 /**
  * @brief all the overriable callbacks within the reactor should be fast. It could
- * impact other RPCs within the process
+ * impact other RPCs within the process.
+ * With grpc::ServerUnaryReactor, we should implement OnDone() and OnCancel() callback
  */
 class RouteGuideUnaryReactor final : public grpc::ServerUnaryReactor {
 public:
