@@ -782,5 +782,7 @@ add_executable(${execCallbackServer} mainCallbackServer.cpp
         reactor/RouteGuideUnaryReactor.cpp
         reactor/RouteGuideUnaryReactor.h
         reactor/RouteGuideWriteReactor.cpp
-        reactor/RouteGuideWriteReactor.h)
+        reactor/RouteGuideWriteReactor.h
+        reactor/RouteGuideReadReactor.cpp
+        reactor/RouteGuideReadReactor.h)
 target_link_libraries(${execCallbackServer} ${_libs_prebuilt} ${_libs_system})
