@@ -5,6 +5,7 @@
 #include "RouteGuideCallbackServer.h"
 
 #include "Helper.h"
+#include "reactor/RouteGuideReadReactor.h"
 #include "reactor/RouteGuideUnaryReactor.h"
 #include "reactor/RouteGuideWriteReactor.h"
 RouteGuideCallbackServer::RouteGuideCallbackServer(const std::string &db) {
@@ -27,7 +28,12 @@ grpc::ServerWriteReactor<routeguide::Feature> *RouteGuideCallbackServer::ListFea
     return new RouteGuideWriteReactor{rectangle, features_};
 }
 grpc::ServerReadReactor<routeguide::Point> *RouteGuideCallbackServer::RecordRoute(grpc::CallbackServerContext *callbackServerContext, routeguide::RouteSummary *routeSummary) {
-    return WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<WithCallbackMethod_RouteChat<Service>>>>::RecordRoute(callbackServerContext, routeSummary);
+    if (callbackServerContext->IsCancelled()) {
+        auto *readDoneReactor = new RouteGuideReadReactor{features_, *routeSummary};
+        readDoneReactor->Finish(grpc::Status(grpc::StatusCode::CANCELLED, "Deadline exceeded or Client cancelled, skip this RPC request!!!"));
+        return readDoneReactor;
+    }
+    return new RouteGuideReadReactor{features_, *routeSummary};
 }
 grpc::ServerBidiReactor<routeguide::RouteNote, routeguide::RouteNote> *RouteGuideCallbackServer::RouteChat(grpc::CallbackServerContext *callbackServerContext) {
     return WithCallbackMethod_GetFeature<WithCallbackMethod_ListFeatures<WithCallbackMethod_RecordRoute<WithCallbackMethod_RouteChat<Service>>>>::RouteChat(callbackServerContext);
